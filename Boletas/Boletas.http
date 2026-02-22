@@ -1,0 +1,6 @@
+@Boletas_HostAddress = http://localhost:5082
+
+GET {{Boletas_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
