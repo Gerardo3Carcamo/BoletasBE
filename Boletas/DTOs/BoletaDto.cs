@@ -4,7 +4,7 @@ namespace Boletas.DTOs
 {
     public class BoletaDto
     {
-        public Boleta Boletas { get; set; }
-        public List<Usuario> Usuarios { get; set; }
+        public Boleta Boletas { get; set; } = null!;
+        public List<Usuario> Usuarios { get; set; } = [];
     }
 }

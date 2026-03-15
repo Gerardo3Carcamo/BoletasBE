@@ -75,3 +75,4 @@
 /Volumes/SSD/Source/Repos/ARECH/Backend/Boletas/Boletas/obj/Debug/net8.0/Boletas.pdb
 /Volumes/SSD/Source/Repos/ARECH/Backend/Boletas/Boletas/obj/Debug/net8.0/Boletas.genruntimeconfig.cache
 /Volumes/SSD/Source/Repos/ARECH/Backend/Boletas/Boletas/obj/Debug/net8.0/ref/Boletas.dll
+/Volumes/SSD/Source/Repos/ARECH/Backend/Boletas/Boletas/obj/Debug/net8.0/Boletas.sourcelink.json

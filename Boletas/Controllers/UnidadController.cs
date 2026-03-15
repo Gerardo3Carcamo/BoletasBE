@@ -4,26 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Boletas.Controllers
 {
-    
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class BoletaController: ControllerBase
+    public class UnidadController : ControllerBase
     {
+        private readonly IUnidadRepository _repo;
 
-        private readonly IBoletaRepository _repo;
-
-        public BoletaController(IBoletaRepository repo) => _repo = repo;
+        public UnidadController(IUnidadRepository repo) => _repo = repo;
 
         [HttpPost]
-        public async Task<IActionResult> AddBoleta(BoletaDto payload)
+        public async Task<IActionResult> CrearUnidad(CrearUnidadDto payload)
         {
             try
             {
-                var result = await _repo.InsertBoleta(payload);
+                var result = await _repo.CrearUnidad(payload);
                 return Ok(new
                 {
                     data = result,
-                    message = "",
+                    message = string.Empty,
                     status = true
                 });
             }
@@ -38,7 +36,7 @@ namespace Boletas.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return NotFound(new
+                return Conflict(new
                 {
                     data = false,
                     message = ex.Message,
@@ -50,43 +48,17 @@ namespace Boletas.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetBoleta(int id)
-        {
-            try
-            {
-                var result = await _repo.GetBoleta(id);
-                return Ok(new
-                {
-                    data = result,
-                    message = "",
-                    status = true
-                });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return NotFound(new
-                {
-                    data = false,
-                    message = ex.Message,
-                    status = false
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
+
         [HttpGet]
-        public async Task<IActionResult> GetBoletas()
+        public async Task<IActionResult> GetUnidades()
         {
             try
             {
-                var result = await _repo.GetBoletas();
+                var result = await _repo.GetUnidades();
                 return Ok(new
                 {
                     data = result,
-                    message = "",
+                    message = string.Empty,
                     status = true
                 });
             }
