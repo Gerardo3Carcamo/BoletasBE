@@ -30,12 +30,14 @@ jobs:
             exit 1
           fi
 
-          echo "▶ Copiando archivos con rsync..."
+          echo "▶ Creando directorio..."
           sudo mkdir -p $APP_DIR
+
+          echo "▶ Copiando archivos..."
           sudo rsync -av --delete publish/ $APP_DIR/
 
           echo "▶ Permisos..."
-          sudo chown -R deploy:deploy $APP_DIR
+          sudo chown -R orangepi:orangepi $APP_DIR
 
           echo "▶ Reiniciando servicio..."
           sudo systemctl restart $APP_NAME
