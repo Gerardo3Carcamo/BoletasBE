@@ -1,10 +1,20 @@
 using Boletas.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
 namespace Boletas.Data
 {
     public static class DatabaseBootstrapper
     {
+        public static async Task ResetAsync(BoletasDbContext context, CancellationToken cancellationToken = default)
+        {
+            context.Database.SetCommandTimeout(TimeSpan.FromMinutes(5));
+            Console.WriteLine("Eliminando tablas actuales...");
+            await DropAllTablesAsync(context, cancellationToken);
+            Console.WriteLine("Recreando esquema desde entidades EF...");
+            await BootstrapAsync(context, cancellationToken);
+        }
+
         public static async Task BootstrapAsync(BoletasDbContext context, CancellationToken cancellationToken = default)
         {
             await context.Database.EnsureCreatedAsync(cancellationToken);
@@ -138,6 +148,68 @@ namespace Boletas.Data
             Console.WriteLine($"- Unidad: {await context.Unidades.CountAsync(cancellationToken)}");
             Console.WriteLine($"- Boleta: {await context.Boletas.CountAsync(cancellationToken)}");
             Console.WriteLine($"- BoletaUsuario: {await context.BoletaUsuarios.CountAsync(cancellationToken)}");
+        }
+
+        private static async Task DropAllTablesAsync(BoletasDbContext context, CancellationToken cancellationToken)
+        {
+            var connection = context.Database.GetDbConnection();
+            var shouldClose = connection.State != System.Data.ConnectionState.Open;
+
+            if (shouldClose)
+            {
+                await connection.OpenAsync(cancellationToken);
+            }
+
+            try
+            {
+                var tableNames = new List<string>();
+
+                await using (var listCommand = connection.CreateCommand())
+                {
+                    listCommand.CommandText = """
+                                              SELECT table_name
+                                              FROM information_schema.tables
+                                              WHERE table_schema = DATABASE()
+                                                AND table_type = 'BASE TABLE';
+                                              """;
+
+                    await using var reader = await listCommand.ExecuteReaderAsync(cancellationToken);
+                    while (await reader.ReadAsync(cancellationToken))
+                    {
+                        tableNames.Add(reader.GetString(0));
+                    }
+                }
+
+                if (tableNames.Count == 0)
+                {
+                    return;
+                }
+
+                await ExecuteNonQueryAsync(connection, "SET FOREIGN_KEY_CHECKS = 0;", cancellationToken);
+
+                foreach (var tableName in tableNames)
+                {
+                    var escapedName = tableName.Replace("`", "``");
+                    await ExecuteNonQueryAsync(connection, $"DROP TABLE IF EXISTS `{escapedName}`;", cancellationToken);
+                }
+
+                await ExecuteNonQueryAsync(connection, "SET FOREIGN_KEY_CHECKS = 1;", cancellationToken);
+            }
+            finally
+            {
+                if (shouldClose)
+                {
+                    await connection.CloseAsync();
+                }
+            }
+        }
+
+        private static async Task ExecuteNonQueryAsync(DbConnection connection, string commandText, CancellationToken cancellationToken)
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = commandText;
+            command.CommandTimeout = (int)TimeSpan.FromMinutes(5).TotalSeconds;
+            await command.ExecuteNonQueryAsync(cancellationToken);
         }
     }
 }

@@ -13,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<BoletasDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 36))));
 
 builder.Services.AddScoped<IBoletaRepository, BoletaRepository>();
 builder.Services.AddScoped<IMarcaRepository, MarcaRepository>();
@@ -32,6 +32,14 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+if (args.Contains("--reset-db"))
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<BoletasDbContext>();
+    await DatabaseBootstrapper.ResetAsync(dbContext);
+    return;
+}
 
 if (args.Contains("--bootstrap-db"))
 {
