@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Boletas")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc4a6e31617a6f51f64c54727922a2981f378b82")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+00abecc57683e59ad250188693206e46eb76edcd")]
 [assembly: System.Reflection.AssemblyProductAttribute("Boletas")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Boletas")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
